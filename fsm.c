@@ -32,8 +32,16 @@ static int do_state_update(struct mg_mgr *mgr) {
         .next_state = -1,
         .next_state_stay = -1,
     };
+
     lua_State *L = luaL_newstate();
-    char *input = mg_mprintf("%.*s", (int)priv->data.len, priv->data.ptr);
+    if (!L) {
+        MG_ERROR(("Failed to create Lua state"));
+        return result.code;
+    }
+
+    const char *input_data = priv->data.ptr ? priv->data.ptr : "";
+    int input_data_len = priv->data.len ? (int)priv->data.len : 0;
+    char *input = mg_mprintf("%.*s", input_data_len, input_data);
 
     luaL_openlibs(L);
 
@@ -152,7 +160,7 @@ static int fsm_init(void **priv, void *opts) {
     struct fsm_private *p = NULL;
     int timer_opts = MG_TIMER_REPEAT | MG_TIMER_RUN_NOW;
 
-    signal(SIGINT, signal_handler);   // Setup signal handlers - exist event
+    signal(SIGINT, signal_handler);   // Setup signal handlers - exit event
     signal(SIGTERM, signal_handler);  // manager loop on SIGINT and SIGTERM
     signal(SIGUSR1, signal_handler);  // SIGUSR1 for reset state
 

@@ -8,7 +8,6 @@ struct fsm_option {
     int debug_level;
     int state_begin; //state, start from
     int state_end;  //state, end to
-    int state_timeout; //state, timeout, fallbcak
 };
 
 struct fsm_config {
