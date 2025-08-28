@@ -176,7 +176,7 @@ static int fsm_init(void **priv, void *opts) {
 
     p->state = p->cfg.opts->state_begin;
 
-    mg_timer_add(&p->mgr, 3000, timer_opts, timer_state_fn, &p->mgr); //3s
+    mg_timer_add(&p->mgr, 1000, timer_opts, timer_state_fn, &p->mgr); //1s
 
     *priv = p;
 
