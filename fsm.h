@@ -18,8 +18,12 @@ struct fsm_private {
     struct fsm_config cfg;
     struct mg_mgr mgr;
     int state;  //state, current
-    uint64_t state_stay; //time of stay in state
-    struct mg_str data;
+    int state_delay; //time of stay in state
+    int state_timeout; //state timeout in seconds
+    int state_stay; // whether stay in current state
+    pid_t pid;
+    int fd_read;
+    int fd_write;
 };
 
 int fsm_main(void *user_options);
