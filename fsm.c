@@ -292,6 +292,12 @@ static void fsm_run(void *handle) {
 
 static void fsm_exit(void *handle) {
     struct fsm_private *priv = (struct fsm_private *)handle;
+    if (priv->pid > 0) {
+        kill(-priv->pid, SIGKILL);
+        priv->pid = 0;
+        close(priv->fd_read);
+        priv->fd_read = -1;
+    }
     mg_mgr_free(&priv->mgr);
     free(handle);
 }
