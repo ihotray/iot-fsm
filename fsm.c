@@ -250,6 +250,7 @@ static int fsm_init(void **priv, void *opts) {
     signal(SIGINT, signal_handler);   // Setup signal handlers - exit event
     signal(SIGTERM, signal_handler);  // manager loop on SIGINT and SIGTERM
     signal(SIGUSR1, signal_handler);  // SIGUSR1 for reset state
+    signal(SIGPIPE, SIG_IGN);  // Ignore SIGPIPE
 
     p = calloc(1, sizeof(struct fsm_private));
     if (!p)
