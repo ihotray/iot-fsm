@@ -185,7 +185,7 @@ static void state_update(struct mg_mgr *mgr) {
 
     if (priv->pid > 0) { //check prev process
         int status;
-        pid_t pid = waitpid(-priv->pid, &status, WNOHANG);
+        pid_t pid = waitpid(priv->pid, &status, WNOHANG);
         if (pid == 0) {
             // child is still running
             if (priv->state_timeout > 0) {
@@ -193,7 +193,7 @@ static void state_update(struct mg_mgr *mgr) {
                     // timeout, kill child process
                     MG_INFO(("state %d process %d timeout, killing", priv->state, priv->pid));
                     kill(-priv->pid, SIGKILL);
-                    waitpid(-priv->pid, &status, 0); // wait for it to exit
+                    waitpid(priv->pid, &status, 0); // wait for it to exit
                     priv->pid = 0;
                     close(priv->fd_read);
                     priv->fd_read = -1;
@@ -208,10 +208,10 @@ static void state_update(struct mg_mgr *mgr) {
                     .next_state_delay = -1,
                     .next_state_timeout = -1,
                 };
-                read(priv->fd_read, &result, sizeof(result));
+                size_t n = read(priv->fd_read, &result, sizeof(result));
                 MG_INFO(("state process %d exited with code %d from state %d, next state %d, next state delay %d, next state timeout %d", priv->pid, result.code, priv->state,
                     result.next_state, result.next_state_delay, result.next_state_timeout));
-                if (!result.code) {
+                if (n == sizeof(result) && !result.code) {
                     priv->state = result.next_state;
                     priv->state_delay = result.next_state_delay;
                     priv->state_timeout = result.next_state_timeout;
